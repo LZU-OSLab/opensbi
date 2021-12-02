@@ -14,6 +14,7 @@
 #include <sbi_utils/irqchip/plic.h>
 #include <sbi_utils/serial/sunxi-uart.h>
 #include <sbi_utils/sys/clint.h>
+#include <sbi_utils/sys/d1_wdog.h>
 
 #define D1_PLIC_ADDR		 0x10000000
 #define D1_PLIC_NUM_SOURCES	 256
@@ -87,16 +88,6 @@ static int d1_timer_init(bool cold_boot)
 	return clint_warm_timer_init();
 }
 
-static int d1_system_reset_check(u32 type, u32 reason)
-{
-	return 0; // TODO: check reson & enable reset
-}
-
-static void d1_system_reset(u32 type, u32 reason)
-{
-	// TODO: do reset
-}
-
 const struct sbi_platform_operations platform_ops = {
 	.console_putc		= sunxi_uart_putc,
 	.console_getc		= sunxi_uart_getc,
@@ -109,8 +100,8 @@ const struct sbi_platform_operations platform_ops = {
 	.timer_event_stop	= clint_timer_event_stop,
 	.timer_event_start	= clint_timer_event_start,
 	.timer_init		= d1_timer_init,
-	.system_reset_check	= d1_system_reset_check,
-	.system_reset		= d1_system_reset
+	.system_reset_check	= d1_wdog_system_reset_check,
+	.system_reset		= d1_wdog_system_reset
 };
 const struct sbi_platform platform = {
 	.opensbi_version	= OPENSBI_VERSION,

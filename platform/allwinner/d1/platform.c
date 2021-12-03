@@ -12,7 +12,7 @@
 #include <sbi/sbi_platform.h>
 
 #include <sbi_utils/irqchip/plic.h>
-#include <sbi_utils/serial/sunxi-uart.h>
+#include <sbi_utils/serial/uart8250.h>
 #include <sbi_utils/sys/clint.h>
 #include <sbi_utils/sys/d1_wdog.h>
 
@@ -44,7 +44,9 @@ static struct clint_data clint = {
 
 static int d1_console_init(void)
 {
-	return sunxi_uart_init(D1_UART_ADDR);
+	return uart8250_init(D1_UART_ADDR, D1_UART_CLK_IN_HZ,
+			     D1_UART_BAUDRATE, D1_UART_REG_SHIFT,
+			     D1_UART_REG_WIDTH);
 }
 
 static int d1_irqchip_init(bool cold_boot)
@@ -89,8 +91,8 @@ static int d1_timer_init(bool cold_boot)
 }
 
 const struct sbi_platform_operations platform_ops = {
-	.console_putc		= sunxi_uart_putc,
-	.console_getc		= sunxi_uart_getc,
+	.console_putc		= uart8250_putc,
+	.console_getc		= uart8250_getc,
 	.console_init		= d1_console_init,
 	.irqchip_init		= d1_irqchip_init,
 	.ipi_send		= clint_ipi_send,
